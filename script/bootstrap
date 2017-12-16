@@ -1,0 +1,17 @@
+#!/bin/sh
+
+virtualenv -p python2.7 env
+. env/bin/activate
+pip install -t lib -r requirements.txt
+
+echo "==============================="
+echo "Create env/lib/python2.7/site-packages/sitecustomize.py"
+echo "==============================="
+echo 'import sys' > env/lib/python2.7/site-packages/sitecustomize.py
+echo 'reload(sys)' >> env/lib/python2.7/site-packages/sitecustomize.py
+echo 'sys.setdefaultencoding("utf-8")' >> env/lib/python2.7/site-packages/sitecustomize.py
+
+echo "==============================="
+echo "completed"
+echo "==============================="
+echo 'run "$ . env/bin/activate" to activate'
