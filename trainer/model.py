@@ -66,7 +66,7 @@ def build_estimator(config, hidden_units=None):
         config=config,
         linear_feature_columns=wide_columns,
         dnn_feature_columns=deep_columns,
-        dnn_hidden_units=hidden_units or [4 * 2],
+        dnn_hidden_units=hidden_units or [64],
         fix_global_step_increment_bug=True
     )
 

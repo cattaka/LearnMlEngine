@@ -1,1 +1,2 @@
 tensorflow-gpu==1.4.1
+tensorboard==1.0.0a6
