@@ -79,7 +79,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--first-layer-size',
         help='Number of nodes in the first layer of the DNN',
-        default=(8192*4),
+        default=(5*4),
         type=int
     )
     parser.add_argument(
@@ -162,7 +162,7 @@ if __name__ == '__main__':
             export_strategies=[saved_model_export_utils.make_export_strategy(
                 model.SERVING_FUNCTIONS[args.export_format],
                 exports_to_keep=1,
-                default_output_alternative_key=None,
+                default_output_alternative_key="g_dvec",
             )]
         ),
         run_config=run_config.RunConfig(model_dir=args.job_dir),

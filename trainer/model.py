@@ -5,6 +5,10 @@ from __future__ import print_function
 import multiprocessing
 
 import sys
+from math import sqrt
+from random import randrange
+
+from numpy import random
 
 import tensorflow as tf
 import argparse
@@ -24,6 +28,10 @@ DEEP_COLUMNS = [
 
 INPUT_COLUMNS = WIDE_COLUMNS + DEEP_COLUMNS
 
+GOAL_COLUMNS = [
+    tf.feature_column.numeric_column("g_dvec", shape=[2], dtype=dtypes.float32),
+    tf.feature_column.numeric_column("g_wvec", shape=[2], dtype=dtypes.float32),
+]
 
 def json_serving_input_fn():
     """Build the serving inputs."""
@@ -65,22 +73,34 @@ def build_estimator(config, hidden_units=None):
 
 def generate_input_fn(shuffle=True,
                       batch_size=2):
-    wvec = [
-        [[1.0, 2.0, 3.0], [2.0, 3.0, 4.0]],
-        [[3.0, 4.0, 5.0], [4.0, 5.0, 6.0]],
-    ]
-    dvec = [
-        [[2.0, 3.0, 4.0], [3.0, 4.0, 5.0]],
-        [[4.0, 5.0, 6.0], [7.0, 8.0, 9.0], ],
-    ]
-    g_wvec = [
-        [6.0, 9.0],
-        [12.0, 15.0],
-    ]
-    g_dvec = [
-        [5.3851648071, 7.0710678119, ],
-        [8.7749643874, 13.9283882772, ]
-    ]
+    wvec = []
+    dvec = []
+    g_wvec = []
+    g_dvec = []
+
+    def dist(a,b):
+        return sqrt(sum((a[idx]-b[idx])**2 for idx in range(0, 3)))
+
+    def dist_r(a1,a2,b1,b2):
+        return sqrt(sum(((a1[idx]-a2[idx]) - (b1[idx]-b2[idx]))**2 for idx in range(0, 3)))
+
+    for i in range(0, 100):
+        wvec += [[
+            [randrange(0, 100), randrange(0, 100), randrange(0, 100)],
+            [randrange(0, 100), randrange(0, 100), randrange(0, 100)],
+        ]]
+        dvec += [[
+            [randrange(0, 100), randrange(0, 100), randrange(0, 100)],
+            [randrange(0, 100), randrange(0, 100), randrange(0, 100)],
+        ]]
+        g_wvec = [
+            [ dist(wvec[i][0], wvec[i][1]),  dist(dvec[i][0], dvec[i][1])],
+            [-dist(wvec[i][0], wvec[i][1]), -dist(dvec[i][0], dvec[i][1])],
+        ]
+        g_dvec = [
+            [ dist_r(wvec[i][0], wvec[i][1], dvec[i][0], dvec[i][1]),  dist_r(wvec[i][0], dvec[i][1], wvec[i][0], dvec[i][1])],
+            [-dist_r(wvec[i][0], wvec[i][1], dvec[i][0], dvec[i][1]), -dist_r(wvec[i][0], dvec[i][1], wvec[i][0], dvec[i][1])],
+        ]
 
     features = {
         'wvec': tf.stack(wvec),
