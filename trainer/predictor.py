@@ -39,20 +39,40 @@ if __name__ == '__main__':
 
 
     def prediction_input_fn():
-        wvec = [[1, 2, 3], [4, 5, 6]]
-        dvec = [[2, 3, 4], [5, 6, 7]]
-        features = {
-            'wvec': tf.stack(wvec),
-            'dvec': tf.stack(dvec),
+        feature_placeholders = {
+            'wvec': tf.placeholder(tf.float32, [1, 2, 3]),
+            'dvec': tf.placeholder(tf.float32, [1, 2, 3]),
         }
-        inputs = {}
-        for feat in model.INPUT_COLUMNS:
-            inputs[feat.name] = tf.placeholder(shape=[None], dtype=feat.dtype)
+        features = {
+            key: tf.expand_dims(tensor, -1)
+            for key, tensor in feature_placeholders.items()
+        }
 
-        return tf.contrib.learn.InputFnOps(features, None, inputs)
+        return tf.contrib.learn.InputFnOps(features, None, feature_placeholders)
 
 
     predictor = from_contrib_estimator(
         estimator=estimator,
-        prediction_input_fn=prediction_input_fn
+        prediction_input_fn=prediction_input_fn,
+        output_alternative_key="g_dvec"
     )
+
+    sess = tf.Session()
+    print(predictor.fetch_tensors)
+#    print(predictor.fetch_tensors["scores"].eval())
+    wvec = [[[1, 2, 3], [4, 5, 6]]]
+    dvec = [[[2, 3, 4], [5, 6, 7]]]
+    i = 0
+    g_wvec = [
+        [ model.dist(wvec[i][0], wvec[i][1]),  model.dist(dvec[i][0], dvec[i][1])],
+    ]
+    g_dvec = [
+        [ model.dist_r(wvec[i][0], wvec[i][1], dvec[i][0], dvec[i][1]),  model.dist_r(wvec[i][0], dvec[i][1], wvec[i][0], dvec[i][1])],
+    ]
+
+    features = {
+            'wvec': wvec,
+            'dvec': dvec,
+        }
+    print(predictor(features))
+    print([g_wvec, g_dvec])

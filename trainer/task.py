@@ -35,10 +35,6 @@ def generate_experiment_fn(**experiment_args):
         eval_input = lambda: model.generate_input_fn(shuffle=False)
         return tf.contrib.learn.Experiment(
             model.build_estimator(
-                hidden_units=[
-                    max(2, int(hparams.first_layer_size))
-                    for i in range(hparams.num_layers)
-                ],
                 config=run_config
             ),
             train_input_fn=train_input,

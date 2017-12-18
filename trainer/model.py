@@ -66,9 +66,19 @@ def build_estimator(config, hidden_units=None):
         config=config,
         linear_feature_columns=wide_columns,
         dnn_feature_columns=deep_columns,
-        dnn_hidden_units=hidden_units or [32, 32],
+        dnn_hidden_units=hidden_units or [72, 72, 72, 72],
         fix_global_step_increment_bug=True
     )
+
+
+def dist(a, b):
+    #return sqrt(sum((a[idx]-b[idx])**2 for idx in range(0, 3)))
+    return sum((a[idx]-b[idx]) for idx in range(0, 3))
+
+
+def dist_r(a1,a2,b1,b2):
+    #return sqrt(sum(((a1[idx]-a2[idx]) - (b1[idx]-b2[idx]))**2 for idx in range(0, 3)))
+    return sum(((a1[idx]-a2[idx]) - (b1[idx]-b2[idx])) for idx in range(0, 3))
 
 
 def generate_input_fn(shuffle=True,
@@ -78,20 +88,14 @@ def generate_input_fn(shuffle=True,
     g_wvec = []
     g_dvec = []
 
-    def dist(a, b):
-        return sqrt(sum((a[idx]-b[idx])**2 for idx in range(0, 3)))
-
-    def dist_r(a1,a2,b1,b2):
-        return sqrt(sum(((a1[idx]-a2[idx]) - (b1[idx]-b2[idx]))**2 for idx in range(0, 3)))
-
     for i in range(0, batch_size):
         wvec += [[
-            [randrange(0, 100), randrange(0, 100), randrange(0, 100)],
-            [randrange(0, 100), randrange(0, 100), randrange(0, 100)],
+            [randrange(0, 10), randrange(0, 10), randrange(0, 10)],
+            [randrange(0, 10), randrange(0, 10), randrange(0, 10)],
         ]]
         dvec += [[
-            [randrange(0, 100), randrange(0, 100), randrange(0, 100)],
-            [randrange(0, 100), randrange(0, 100), randrange(0, 100)],
+            [randrange(0, 10), randrange(0, 10), randrange(0, 10)],
+            [randrange(0, 10), randrange(0, 10), randrange(0, 10)],
         ]]
         g_wvec += [
             [ dist(wvec[i][0], wvec[i][1]),  dist(dvec[i][0], dvec[i][1])],
