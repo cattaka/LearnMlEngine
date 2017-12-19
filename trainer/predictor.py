@@ -59,7 +59,6 @@ if __name__ == '__main__':
 
     sess = tf.Session()
     print(predictor.fetch_tensors)
-#    print(predictor.fetch_tensors["scores"].eval())
     wvec = [[[1, 2, 3], [4, 5, 6]]]
     dvec = [[[2, 3, 4], [5, 6, 7]]]
     i = 0
