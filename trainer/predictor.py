@@ -14,7 +14,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # Input Arguments
     parser.add_argument(
-        '--job_dir',
+        '--job-dir',
         help='GCS location to write checkpoints and export models',
         required=True
     )

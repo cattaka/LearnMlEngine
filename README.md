@@ -30,3 +30,59 @@ Put "from distutils.sysconfig import get_python_lib" and replace "site.getsitepa
 ```sh
 $ tensorboard --logdir=workspace/output
 ```
+
+### Run with MLEngine
+
+refs https://cloud.google.com/ml-engine/docs/how-tos/getting-started-training-prediction
+
+#### Local
+
+```sh
+gcloud ml-engine local train \
+    --module-name trainer.task \
+    --package-path trainer/ \
+    -- \
+    --train-steps 100000 \
+    --eval-steps 100 \
+    --job-dir workspace/output 
+```
+
+#### Remote
+
+```sh
+REGION=us-central1
+BUCKET_NAME="your_bucket_name"
+JOB_NAME=learn_ml_engine_1
+OUTPUT_PATH=gs://$BUCKET_NAME/$JOB_NAME
+
+gcloud ml-engine jobs submit training $JOB_NAME \
+    --job-dir $OUTPUT_PATH \
+    --runtime-version 1.4 \
+    --module-name trainer.task \
+    --package-path trainer/ \
+    --region $REGION \
+    -- \
+    --eval-steps 100 \
+    --train-steps 1000000 \
+    --verbosity DEBUG
+```
+
+### Deploy
+
+refs https://cloud.google.com/ml-engine/docs/how-tos/deploying-models
+
+```sh
+gcloud ml-engine versions create "v001" \
+    --model "learn_ml_engine" \
+    --origin $OUTPUT_PATH/export/XXXXX/
+```
+
+### Predict
+
+#### local
+
+```sh
+gcloud ml-engine local predict \
+    --model-dir workspace/output/export/Servo/XXXXXXX/ \
+    --json-instances predict_test.json
+```

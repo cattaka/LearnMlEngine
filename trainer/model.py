@@ -18,12 +18,14 @@ from tensorflow.contrib.learn.python.learn.estimators.head import Head, multi_he
 from tensorflow.contrib.learn.python.learn.estimators.run_config import RunConfig
 from tensorflow.python.framework import dtypes
 
+IN_SHAPE = [2,3]
+
 WIDE_COLUMNS = [
-    tf.feature_column.numeric_column("wvec", shape=[2, 3], dtype=dtypes.float32),
+    tf.feature_column.numeric_column("wvec", shape=IN_SHAPE, dtype=dtypes.float32),
 ]
 
 DEEP_COLUMNS = [
-    tf.feature_column.numeric_column("dvec", shape=[2, 3], dtype=dtypes.float32),
+    tf.feature_column.numeric_column("dvec", shape=IN_SHAPE, dtype=dtypes.float32),
 ]
 
 INPUT_COLUMNS = WIDE_COLUMNS + DEEP_COLUMNS
@@ -37,11 +39,11 @@ def json_serving_input_fn():
     """Build the serving inputs."""
     inputs = {}
     for feat in INPUT_COLUMNS:
-        inputs[feat.name] = tf.placeholder(shape=[None], dtype=feat.dtype)
+        inputs[feat.name] = tf.placeholder(shape=[1]+IN_SHAPE, dtype=feat.dtype)
 
     features = {
-        key: tf.expand_dims(tensor, -1)
-        for key, tensor in inputs.iteritems()
+        key: tf.expand_dims(inputs[key], -1)
+        for key in inputs.keys()
     }
     return tf.contrib.learn.InputFnOps(features, None, inputs)
 
@@ -144,7 +146,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # Input Arguments
     parser.add_argument(
-        '--job_dir',
+        '--job-dir',
         help='GCS location to write checkpoints and export models',
         required=True
     )
