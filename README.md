@@ -1,18 +1,22 @@
 ## SecondSight
 
-### bootstrap
+### Getting started
+
+#### bootstrap
 
 ```sh
 $ ./script/bootstrap
 ```
 
-### activate python
+#### activate python
 
 ```sh
 $ . env/bin/activate
 ```
 
-### exec
+### Development
+
+#### exec
 
 ```
 $ python --job_dir workspace/output --train-steps 10000 --eval-steps 100
@@ -31,7 +35,8 @@ Put "from distutils.sysconfig import get_python_lib" and replace "site.getsitepa
 $ tensorboard --logdir=workspace/output
 ```
 
-### Run with MLEngine
+
+### Train with MLEngine
 
 refs https://cloud.google.com/ml-engine/docs/how-tos/getting-started-training-prediction
 
@@ -67,17 +72,9 @@ gcloud ml-engine jobs submit training $JOB_NAME \
     --verbosity DEBUG
 ```
 
-### Deploy
+### Predict
 
 refs https://cloud.google.com/ml-engine/docs/how-tos/deploying-models
-
-```sh
-gcloud ml-engine versions create "v001" \
-    --model "learn_ml_engine" \
-    --origin $OUTPUT_PATH/export/XXXXX/
-```
-
-### Predict
 
 #### local
 
@@ -85,4 +82,15 @@ gcloud ml-engine versions create "v001" \
 gcloud ml-engine local predict \
     --model-dir workspace/output/export/Servo/XXXXXXX/ \
     --json-instances predict_test.json
+```
+
+#### remote
+
+```sh
+$ gcloud ml-engine versions create "the_version" \
+     --model "learn_ml_engine" \
+     --origin $OUTPUT_PATH/export/Servo/XXXXXXXX
+$ gcloud ml-engine predict \
+     --model $OUTPUT_PATH \
+     --json-instances predict_test.json
 ```
