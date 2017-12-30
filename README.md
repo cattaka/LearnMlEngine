@@ -1,4 +1,4 @@
-## SecondSight
+## LearnMlEngine
 
 ### Getting started
 
@@ -19,8 +19,8 @@ $ . env/bin/activate
 #### exec
 
 ```
-$ python --job_dir workspace/output --train-steps 10000 --eval-steps 100
-$ python trainer/predictor.py --job_dir workspace/output
+$ python trainer/predictor.py --job-dir workspace/output --train-steps 10000 --eval-steps 100
+$ python trainer/predictor.py --job-dir workspace/output
 ```
 
 
